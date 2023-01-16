@@ -7,15 +7,6 @@ export class MessageMutationResolver {
   constructor(private messageService: MessageService) {}
 
   @Mutation(() => Message)
-  async sendMessage(
-    @Args('body') body: string,
-    @Args('receiverId') receiverId: number,
-    @Args('senderId') senderId: number,
-  ) {
-    return this.messageService.saveMessage(body, receiverId, senderId);
-  }
-
-  @Mutation(() => Message)
   async saveMessage(
     @Args('body') body: string,
     @Args('receiverId') receiverId: number,

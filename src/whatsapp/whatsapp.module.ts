@@ -5,7 +5,10 @@ import { Message } from './entity';
 import { MessageQueryResolver, ContactQueryResolver } from './resolver';
 import { UserService } from '@user/service';
 import { MessageService, ContactService } from './service';
-import { MessageMutationResolver } from './resolver/message';
+import {
+  MessageMutationResolver,
+  MessageSubscriptionResolver,
+} from './resolver/message';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Message])],
@@ -15,7 +18,9 @@ import { MessageMutationResolver } from './resolver/message';
     MessageService,
 
     MessageQueryResolver,
+    MessageSubscriptionResolver,
     MessageMutationResolver,
+
     ContactQueryResolver,
   ],
 })

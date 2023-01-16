@@ -10,9 +10,4 @@ export class MessageQueryResolver {
   messages(@Args('id') id: number) {
     return this.messageService.messages({ id, limit: 100, offset: 0 });
   }
-
-  @Query(() => [Message])
-  allMessages() {
-    return this.messageService.messages({ id: 1, limit: 100, offset: 0 });
-  }
 }
