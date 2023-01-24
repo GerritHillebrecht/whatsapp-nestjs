@@ -21,13 +21,10 @@ export class MessageService {
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
 
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
     private userService: UserService,
   ) {}
 
-  whatsappIterator() {
+  whatsappMessageIterator() {
     return pubSub.asyncIterator<Message>('whatsappMessage');
   }
 
@@ -35,8 +32,24 @@ export class MessageService {
     pubSub.publish('whatsappMessage', { messageSubscription: message });
   }
 
-  async saveMessage(body: string, receiverId: number, senderId: number) {
+  whatsappReadUpdateIterator() {
+    return pubSub.asyncIterator<Message>('whatsappReadUpdate');
+  }
+
+  publishReadUpdate(messageIds: number[]) {
+    pubSub.publish('whatsappReadUpdate', {
+      readupdateSubscription: messageIds,
+    });
+  }
+
+  async saveMessage(
+    uuid: string,
+    body: string,
+    receiverId: number,
+    senderId: number,
+  ) {
     const newMessage = await this.messageRepository.save({
+      uuid,
       body,
       receiverId,
       senderId,
@@ -52,15 +65,23 @@ export class MessageService {
   }
 
   async updateMessage(id: number, body: string) {
-    const updatedMessage = await this.messageRepository.update(
-      { id },
-      { body },
-    );
+    await this.messageRepository.update({ id }, { body });
 
     const message = await this.messageRepository.findOneBy({ id });
 
     this.publishMessage(message);
     return message;
+  }
+
+  async updateReadStatus(Ids: number[]) {
+    await this.messageRepository.update(
+      { id: In(Ids) },
+      { deliveryStatus: 'read' },
+    );
+
+    this.publishReadUpdate(Ids);
+
+    return Ids;
   }
 
   async deleteMessage(id: number) {

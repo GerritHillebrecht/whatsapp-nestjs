@@ -14,6 +14,6 @@ export class MessageSubscriptionResolver {
     },
   })
   messageSubscription(@Args('receiverId') receiverId: number) {
-    return this.message.whatsappIterator();
+    return this.message.whatsappMessageIterator();
   }
 }

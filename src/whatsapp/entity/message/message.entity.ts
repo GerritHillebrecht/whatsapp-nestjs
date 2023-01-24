@@ -17,6 +17,10 @@ export class Message {
   @Field((type) => Number)
   id: number;
 
+  @Column({ unique: true })
+  @Field((type) => String)
+  uuid: string;
+
   @Column()
   @Field((type) => String)
   body: string;

@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
 import { Message } from '@whatsapp/entity';
 import { MessageService } from '@whatsapp/service';
 
@@ -8,16 +8,24 @@ export class MessageMutationResolver {
 
   @Mutation(() => Message)
   async saveMessage(
+    @Args('uuid') uuid: string,
     @Args('body') body: string,
     @Args('receiverId') receiverId: number,
     @Args('senderId') senderId: number,
   ) {
-    return this.messageService.saveMessage(body, receiverId, senderId);
+    return this.messageService.saveMessage(uuid, body, receiverId, senderId);
   }
 
   @Mutation(() => Message)
   async updateMessage(@Args('id') id: number, @Args('body') body: string) {
     return this.messageService.updateMessage(id, body);
+  }
+
+  @Mutation(() => [String])
+  async updateReadStatus(
+    @Args({ name: 'messageIds', type: () => [Int] }) messageIds: number[],
+  ) {
+    return this.messageService.updateReadStatus(messageIds);
   }
 
   @Mutation(() => Message)
