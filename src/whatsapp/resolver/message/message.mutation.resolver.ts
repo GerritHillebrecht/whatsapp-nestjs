@@ -21,7 +21,7 @@ export class MessageMutationResolver {
     return this.messageService.updateMessage(id, body);
   }
 
-  @Mutation(() => [String])
+  @Mutation(() => [Int])
   async updateReadStatus(
     @Args({ name: 'messageIds', type: () => [Int] }) messageIds: number[],
   ) {
