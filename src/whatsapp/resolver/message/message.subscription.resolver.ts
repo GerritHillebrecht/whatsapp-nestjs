@@ -8,12 +8,21 @@ export class MessageSubscriptionResolver {
 
   @Subscription(() => Message, {
     name: 'messageSubscription',
-    filter: ({ messageSubscription: { receiver, sender } }, { receiverId }) => {
-      console.log({ receiver, sender, receiverId });
-      return receiver.id === receiverId || sender.id === receiverId;
-    },
+    filter: ({ messageSubscription: { receiver, sender } }, { receiverId }) =>
+      [sender.id, receiver.id].includes(receiverId),
   })
   messageSubscription(@Args('receiverId') receiverId: number) {
     return this.message.whatsappMessageIterator();
+  }
+
+  @Subscription(() => [Message], {
+    name: 'readupdateSubscription',
+    // filter: (result, { receiverId }) => {
+    //   console.log({ receiverId, messages: result.readupdateSubscription });
+    //   return result.readupdateSubscription;
+    // },
+  })
+  readupdateSubscription(@Args('receiverId') receiverId: number) {
+    return this.message.whatsappReadUpdateIterator();
   }
 }
