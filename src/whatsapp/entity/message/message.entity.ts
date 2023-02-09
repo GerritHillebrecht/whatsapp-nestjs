@@ -45,10 +45,6 @@ export class Message {
   @Field((type) => Int, { nullable: true })
   receiverId: number;
 
-  @Column({ default: false })
-  @Field((type) => Boolean)
-  isRead: boolean;
-
   @Column({ default: 'delivered' })
   @Field((type) => String)
   deliveryStatus: 'pending' | 'delivered' | 'read';
