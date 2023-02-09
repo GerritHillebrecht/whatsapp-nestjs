@@ -12,6 +12,7 @@ export class MessageQueryResolver {
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit = 100,
     @Args({ name: 'offset', type: () => Int, nullable: true }) offset = 0,
   ) {
+    console.log({ limit, offset });
     return this.messageService.messages({ id, limit, offset });
   }
 }
