@@ -7,7 +7,11 @@ export class MessageQueryResolver {
   constructor(private messageService: MessageService) {}
 
   @Query(() => [Message])
-  messages(@Args('id') id: number) {
-    return this.messageService.messages({ id, limit: 100, offset: 0 });
+  messages(
+    @Args('id') id: number,
+    @Args({ name: 'limit', type: () => Int, nullable: true }) limit = 100,
+    @Args({ name: 'offset', type: () => Int, nullable: true }) offset = 0,
+  ) {
+    return this.messageService.messages({ id, limit, offset });
   }
 }
