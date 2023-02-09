@@ -19,7 +19,6 @@ export class MessageSubscriptionResolver {
   @Subscription(() => [Message], {
     name: 'readupdateSubscription',
     filter: ({ readupdateSubscription: messages }, { id }) => {
-      console.log('FILTERING', id, messages);
       return messages.filter(({ sender, receiver }) =>
         [sender.id, receiver.id].includes(id),
       );
