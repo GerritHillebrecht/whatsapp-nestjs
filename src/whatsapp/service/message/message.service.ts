@@ -12,7 +12,7 @@ type MessageQueryOptions = {
   id: number;
   limit: number;
   offset: number;
-  contact?: number | number[];
+  contactIds: number[];
 };
 
 @Injectable()
@@ -70,6 +70,7 @@ export class MessageService {
       this.openAIResponse({
         userId: message.sender.id,
         prompt: message.body,
+        botId: message.receiver.id,
       });
       this.updateReadStatus([message.id]);
     }
@@ -107,34 +108,43 @@ export class MessageService {
     return message;
   }
 
-  messagesOfContacts(queryOptions: MessageQueryOptions) {
-    return this.messageRepository.find(this.queryOptions(queryOptions));
-  }
-
-  async messages(queryOptions: MessageQueryOptions): Promise<Message[]> {
-    const contact = (await this.userService.getUsers(queryOptions.id)).map(
+  async messages(
+    queryOptions: Omit<MessageQueryOptions, 'contactIds'>,
+  ): Promise<Message[]> {
+    const contactIds = (await this.userService.getUsers(queryOptions.id)).map(
       ({ id }) => id,
     );
 
-    return await this.messagesOfContacts({ ...queryOptions, contact });
+    return this.messagesOfContacts({ ...queryOptions, contactIds });
+  }
+
+  messagesOfContacts({ contactIds, limit, offset, id }: MessageQueryOptions) {
+    return Promise.all(
+      contactIds.map((contactId) =>
+        this.messageRepository.find(
+          this.queryOptions({ id, limit, offset, contactId }),
+        ),
+      ),
+    ).then((messages) => messages.flat());
   }
 
   private queryOptions({
     id,
     limit,
     offset,
-    contact,
-  }: MessageQueryOptions): FindManyOptions<Message> {
-    const contactCriteria = typeof contact === 'number' ? contact : In(contact);
+    contactId,
+  }: Omit<MessageQueryOptions, 'contactIds'> & {
+    contactId: number;
+  }): FindManyOptions<Message> {
     return {
       where: [
         {
           receiverId: id,
-          senderId: contactCriteria,
+          senderId: contactId,
         },
         {
           senderId: id,
-          receiverId: contactCriteria,
+          receiverId: contactId,
         },
       ],
       order: {
@@ -148,9 +158,11 @@ export class MessageService {
   private async openAIResponse({
     userId,
     prompt,
+    botId,
   }: {
     userId: number;
     prompt: string;
+    botId: number;
   }) {
     console.log('FETCHTING BOT RESPONSE', userId, prompt);
 
@@ -166,7 +178,7 @@ export class MessageService {
       'BOT_RESPONSE' + new Date().getTime(),
       response,
       userId,
-      18,
+      botId,
     );
   }
 }
