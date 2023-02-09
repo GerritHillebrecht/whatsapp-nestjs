@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@user/entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -15,13 +15,24 @@ export class UserService {
   }
 
   async getUsers(id: number): Promise<User[]> {
-    const AIBot = await this.userRepository.findOne({ where: { id: 18 } });
-    return this.userRepository
-      .findOne({
-        relations: ['contacts'],
-        where: { id },
-      })
-      .then((user) => [AIBot, ...user.contacts]);
+    return this.userRepository.find({
+      where: {
+        id: Not(id),
+      },
+      order: {
+        firstName: 'ASC',
+      },
+    });
+    // const AIBots = await this.userRepository.find({ where: { isBot: true } });
+    // return this.userRepository
+    //   .findOne({
+    //     relations: ['contacts'],
+    //     where: { id },
+    //   })
+    //   .then((user) => {
+    //     console.log(user, user.contacts, AIBots);
+    //     return [...user.contacts, ...AIBots];
+    //   });
   }
 
   searchUsers(searchString: string): Promise<User[]> {
