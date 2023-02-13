@@ -12,8 +12,15 @@ export class MessageMutationResolver {
     @Args('body') body: string,
     @Args('receiverId') receiverId: number,
     @Args('senderId') senderId: number,
+    @Args('image') image: string | null,
   ) {
-    return this.messageService.saveMessage(uuid, body, receiverId, senderId);
+    return this.messageService.saveMessage(
+      uuid,
+      body,
+      receiverId,
+      senderId,
+      image,
+    );
   }
 
   @Mutation(() => Message)
