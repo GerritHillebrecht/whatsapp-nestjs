@@ -53,12 +53,14 @@ export class MessageService {
     body: string,
     receiverId: number,
     senderId: number,
+    image: string | null,
   ) {
     const newMessage = await this.messageRepository.save({
       uuid,
       body,
       receiverId,
       senderId,
+      image,
       isRead: false,
     });
 
@@ -179,6 +181,7 @@ export class MessageService {
       response,
       userId,
       botId,
+      null,
     );
   }
 }
